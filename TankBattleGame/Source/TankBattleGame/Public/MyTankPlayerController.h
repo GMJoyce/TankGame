@@ -20,5 +20,11 @@ public:
 	AMyTank * GetControlledTank() const;
 
 	// called when the game starts or actor is spawned
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
+	// called each frame of game
+	virtual void Tick(float DeltaTime);
+
+private:
+	void AimTowardsCrosshair();
+
 };
