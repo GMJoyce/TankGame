@@ -21,7 +21,12 @@ private:
 	// fires event at the beginning of play or when spawned
 	void BeginPlay() override;
 
+	void Tick(float DeltaTime) override;
+
 	// gets the tank controlled by the AI
-	AMyTank * GetPlayerTank() const;
+	AMyTank* GetPlayerTank() const;
 	
+	APawn* PlayerTank = nullptr;
+
+	AMyTank* GetControlledTank() const;
 };

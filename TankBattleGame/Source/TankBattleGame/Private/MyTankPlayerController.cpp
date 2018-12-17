@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MyTankPlayerController.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
+
+
 
 
 void AMyTankPlayerController::BeginPlay()
@@ -18,9 +21,10 @@ void AMyTankPlayerController::BeginPlay()
 	}
 }
 
+
 void AMyTankPlayerController::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
+	Super::Tick(DeltaTime);
 	AimTowardsCrosshair();
 	// UE_LOG(LogTemp, Warning, TEXT("ticking playercontroller"));
 }
@@ -31,29 +35,65 @@ AMyTank* AMyTankPlayerController::GetControlledTank() const
 	return Cast<AMyTank>(GetPawn());
 }
 
-// start the tank moving the barrel so that a shot would hit where
-// the crosshair intersects the worldspace
+
 void AMyTankPlayerController::AimTowardsCrosshair()
 {
 	if (!GetControlledTank()) { return; }
 	
-	FVector OutHitLocation;	// Tell controlled tank to aim at this point
-	if (GetSightRayHitLocation(OutHitLocation))
+	FVector HitLocation;	// Tell controlled tank to aim at this point
+	if (GetSightRayHitLocation(HitLocation))
 	{ 
-	UE_LOG(LogTemp, Warning, TEXT("Hit location: %s"), *OutHitLocation.ToString())
+		GetControlledTank()->AimAt(HitLocation);
 	}
 }
 
+
 // Get world location through crosshair by line tracing
-bool AMyTankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) const
+bool AMyTankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 {
+	// find crosshair position
+	int32 ViewPortSizeX, ViewPortSizeY;
+	GetViewportSize(ViewPortSizeX, ViewPortSizeY);
+	auto ScreenLocation = FVector2D(ViewPortSizeX * CrossHairXLocation, ViewPortSizeY * CrossHairYLocation);
 
-	// ray cast from camera to aiming reticule
-		// if something is hit - return true
-			// return FVector of HitLocation as an out parameter	
-		// else return false
-
-	OutHitLocation = FVector(1.0);
+	FVector LookDirection;
+	if (GetLookDirection(ScreenLocation, LookDirection))
+	{
+		GetLookVectorHitLocation(LookDirection, HitLocation);
+	}
+	
 	return true;
+}
+
+
+bool AMyTankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const
+{
+	FHitResult HitResult;
+	auto StartLocation = PlayerCameraManager->GetCameraLocation();
+	auto EndLocation = StartLocation + (LookDirection * LineTraceRange);
+	 if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation,ECollisionChannel::ECC_Visibility))	
+	 {
+			HitLocation = HitResult.Location;
+			return true;
+	 }
+	 else 
+	 {
+		 HitLocation = FVector(0);
+		 return false;
+	 }
+		
+}
+		
+
+bool AMyTankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector & LookDirection) const
+{
+	FVector CameraWorldLocation;
+
+	return DeprojectScreenPositionToWorld(
+		ScreenLocation.X, 
+		ScreenLocation.Y, 
+		CameraWorldLocation, 
+		LookDirection
+	);
 }
 
