@@ -3,15 +3,15 @@
 #pragma once
 
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
-#include "TankBarrel.h"
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "TankAimingComponent.generated.h"
 
 
 class UTankBarrel; // Forward declaration
+class UTankTurret; // Forward declaration
 
-// big fucking testicles in my ballbag
+// tank aiming component
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TANKBATTLEGAME_API UTankAimingComponent : public UActorComponent
 {
@@ -22,6 +22,8 @@ public:
 	UTankAimingComponent();
 
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
+
+	void SetTurretReference(UTankTurret* TurretToSet);
 
 	//void SetTurretReference(UStaticMeshComponent* TurretToSet);
 
@@ -38,5 +40,7 @@ protected:
 
 private:
 	UTankBarrel* Barrel = nullptr;
+	UTankTurret* Turret = nullptr;
+
 	void MoveBarrelTowards(FVector AimDirection);
 };

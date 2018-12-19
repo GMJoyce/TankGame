@@ -2,14 +2,17 @@
 
 #pragma once
 
-#include "MyTank.h"
+
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "MyTankAIController.generated.h"
 
+class AMyTank;
+
 /**
  * 
  */
+
 UCLASS()
 
 

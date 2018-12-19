@@ -2,6 +2,7 @@
 
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
+#include "TankTurret.h"
 #include "Runtime/Core/Public/Math/Rotator.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/GameFramework/Actor.h"
@@ -29,11 +30,15 @@ void UTankAimingComponent::BeginPlay()
 }
 
 
-
-
 void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	Barrel = BarrelToSet;
+}
+
+void UTankAimingComponent::SetTurretReference(UTankTurret * TurretToSet)
+{
+
+	Turret = TurretToSet;
 }
 
 // Called every frame
@@ -46,7 +51,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UTankAimingComponent::AimAt(FVector HitLocation, float ProjectileSpeed)
 {
-	if (!Barrel) { return; }
+	if (!Barrel) { UE_LOG(LogTemp, Warning, TEXT("show in log suck my ass")); return; }
 	FVector OutLaunchVelocity(0);
 	FVector StartLocation = Barrel->GetSocketLocation(FName("BarrelEnd"));
 
@@ -60,8 +65,8 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float ProjectileSpeed)
 		HitLocation,
 		ProjectileSpeed,
 		false,
-		0.f,
-		0.f,
+		0,
+		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace
 	);
 
@@ -69,21 +74,23 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float ProjectileSpeed)
 	{
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
-		//UE_LOG(LogTemp, Warning, TEXT("Aim direction %s"), *AimDirection.ToString())
+		//UE_LOG(LogTemp, Warning, TEXT("Aim solution found"), *AimDirection.ToString())
+	}
+	else
+	{
+		
 	}
 }
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
-	// work out difference between current rotation and AimDirection
+
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
-	UE_LOG(LogTemp, Warning, TEXT("Aim as Rotator is:  %s"), *AimAsRotator.ToString())
 
-		Barrel->Elevate(5.0f); // TODO remove maginc number
 
-	// get aim direction
-	// interpolate turret yaw to match aim direction
-	// interpolate gun barrel pitch to match aim direction
+	Barrel->Elevate(DeltaRotator.Pitch); 		// interpolate gun barrel pitch to match aim direction
+	Turret->RotateTurret(DeltaRotator.Yaw);		
+
 }

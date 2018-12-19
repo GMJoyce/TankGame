@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "MyTank.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "MyTankPlayerController.generated.h"
@@ -10,6 +10,8 @@
 /**
  * 
  */
+
+class AMyTank;
 
 UCLASS()
 class TANKBATTLEGAME_API AMyTankPlayerController : public APlayerController
@@ -35,7 +37,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CrossHairYLocation = 0.3333;
 	UPROPERTY(EditAnywhere)
-	float LineTraceRange = 1000000;
+	float LineTraceRange = 50000000;
 
 	FVector2D ScreenLocation;
 	bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;

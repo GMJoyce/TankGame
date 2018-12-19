@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/GameFramework/Actor.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
+#include "MyTank.h"
 
 void AMyTankAIController::BeginPlay()
 {
