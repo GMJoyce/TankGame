@@ -2,7 +2,12 @@
 
 #include "MyTank.h"
 #include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
+#include "TankBarrel.h"
+#include "Projectile.h"
 #include "Runtime/Core/Public/Math/Vector.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
+
 
 // Sets default values
 AMyTank::AMyTank()
@@ -34,9 +39,23 @@ void AMyTank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+
+
 void AMyTank::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("FIRE"))
+	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTimeSeconds;
+	
+	if (Barrel && isReloaded)
+	{
+		// spawn a projectile at the socket location on the barrel
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation(FName("BarrelEnd")),
+			Barrel->GetSocketRotation(FName("BarrelEnd"))
+			);
+		Projectile->LaunchProjectile(ProjectileSpeed);
+		LastFireTime = FPlatformTime::Seconds();
+	}
 }
 
 
@@ -49,6 +68,7 @@ void AMyTank::AimAt(FVector HitLocation)
 void AMyTank::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	TankAimingComponent->SetBarrelReference(BarrelToSet);
+	Barrel = BarrelToSet;
 }
 
 void AMyTank::SetTurretReference(UTankTurret * TurretToSet)

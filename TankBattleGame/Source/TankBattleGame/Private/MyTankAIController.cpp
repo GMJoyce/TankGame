@@ -10,16 +10,6 @@
 void AMyTankAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	auto PlayerTankClass = GetPlayerTank();
-	if (!PlayerTankClass)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AIController can't find player pawn"))
-	}
-	else 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AI Controller found player controlled tank at %s "), *PlayerTankClass->GetName())
-	}
 }
 
 
@@ -27,31 +17,18 @@ void AMyTankAIController::BeginPlay()
 void AMyTankAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-		if (GetPlayerTank())
+
+	auto PlayerTank = Cast<AMyTank> (GetWorld()->GetFirstPlayerController()->GetPawn());
+	auto ControlledTank = Cast<AMyTank>(GetPawn());
+
+	if (PlayerTank)
 	{
-		// TO DO Move towards player
-		
-		// Move aim towards the player
+		MoveToActor(PlayerTank, AcceptanceRadius);
 
-		GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
-
-		// Fire if ready and able
+		ControlledTank->AimAt(PlayerTank->GetActorLocation());
+		ControlledTank->Fire(); // TODO limit fire rate
 	}
-}
-
-AMyTank* AMyTankAIController::GetPlayerTank() const
-{
-	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	return PlayerPawn ? Cast<AMyTank>(PlayerPawn) : nullptr;
-
-	//if (!PlayerPawn) { return nullptr; }
-	//return Cast<AMyTank>(PlayerPawn);
-}
-
-
-AMyTank* AMyTankAIController::GetControlledTank() const
-{
-	return Cast<AMyTank>(GetPawn());
+		
 }
 
 

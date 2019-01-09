@@ -10,6 +10,8 @@
 class UTankBarrel;				// Forward declaration
 class UTankTurret;				// Forward declaration
 class UTankAimingComponent;		// Forward declaration
+class UTankMovementComponent;	// Forward declaration
+class AProjectile;
 
 
 UCLASS()
@@ -32,6 +34,8 @@ public:
 protected:
 	UTankAimingComponent * TankAimingComponent = nullptr;
 
+	UPROPERTY(BlueprintReadOnly)
+	UTankMovementComponent * TankMovementComponent = nullptr;
 
 private:
 
@@ -47,9 +51,18 @@ private:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere)
-		float ProjectileSpeed = 150000.f; // Sensible starting value of 1000 m/s
 
+	UPROPERTY(EditAnywhere, Category = Firing)
+		float ProjectileSpeed = 10000.f; // Sensible starting value of 1000 m/s
+
+	UPROPERTY(EditAnywhere, Category = Setup)
+		TSubclassOf<AProjectile> ProjectileBlueprint;
 	
-	
+	// Local barrel reference for spawning projectile
+	UTankBarrel* Barrel = nullptr;
+
+	double LastFireTime = -3;
+
+	double ReloadTimeSeconds = 0.25;
+
 };

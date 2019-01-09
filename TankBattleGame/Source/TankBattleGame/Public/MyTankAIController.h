@@ -27,9 +27,10 @@ private:
 	void Tick(float DeltaTime) override;
 
 	// gets the tank controlled by the AI
-	AMyTank* GetPlayerTank() const;
 	
 	APawn* PlayerTank = nullptr;
 
-	AMyTank* GetControlledTank() const;
+	// How close will the AI Tank move to the player
+	float AcceptanceRadius = 3000.0f;
+
 };
