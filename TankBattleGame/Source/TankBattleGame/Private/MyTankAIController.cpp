@@ -6,6 +6,8 @@
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "MyTank.h"
+//depends on movement component via pathfinding system
+
 
 void AMyTankAIController::BeginPlay()
 {
@@ -21,7 +23,7 @@ void AMyTankAIController::Tick(float DeltaTime)
 	auto PlayerTank = Cast<AMyTank> (GetWorld()->GetFirstPlayerController()->GetPawn());
 	auto ControlledTank = Cast<AMyTank>(GetPawn());
 
-	if (PlayerTank)
+	if (ensure(PlayerTank))
 	{
 		MoveToActor(PlayerTank, AcceptanceRadius);
 

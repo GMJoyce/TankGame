@@ -10,15 +10,13 @@
 void AMyTankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	auto ControlledTank = GetControlledTank();
-	if (!ControlledTank)
+	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	if (AimingComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController not found tank"))
+		FoundAimingComponent(AimingComponent);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController BeginPlay, Controlled Tank is %s "), *ControlledTank->GetName())
 	}
 }
 
@@ -27,7 +25,6 @@ void AMyTankPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AimTowardsCrosshair();
-	// UE_LOG(LogTemp, Warning, TEXT("ticking playercontroller"));
 }
 
 
@@ -39,8 +36,8 @@ AMyTank* AMyTankPlayerController::GetControlledTank() const
 
 void AMyTankPlayerController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank()) { return; }
-	
+	if (!ensure(GetControlledTank())) { return; }
+
 	FVector HitLocation;	// Tell controlled tank to aim at this point
 	if (GetSightRayHitLocation(HitLocation))
 	{ 
